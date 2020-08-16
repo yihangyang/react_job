@@ -31,6 +31,7 @@ class Login extends Component {
   }
   render(){
     const {msg, redirectTo} = this.props.user
+    // if redirectTo ist not null, should redirect to the xx route
     if(redirectTo) {
       return <Redirect to={redirectTo} />
     }

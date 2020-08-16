@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom'
 import 'antd-mobile/dist/antd-mobile.css';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import {Provider} from 'react-redux'
+import { Provider } from 'react-redux'
 
 import store from './redux/store'
 import Register from './container/register/register'

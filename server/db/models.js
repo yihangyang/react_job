@@ -18,6 +18,20 @@ const userSchema = mongoose.Schema({
   salary: {type: String} 
 })
 
-const UserModel =mongoose.model('user', userSchema)
+const UserModel = mongoose.model('user', userSchema)
 
 exports.UserModel = UserModel
+
+const chatSchema = mongoose.Schema({
+  from: {type: String, required: true},
+  to: {type: String, required: true},
+  to: {type: String, required: true},
+  chat_id: {type: String, required: true}, // (from) + (to) array in order to sort sequence and and grouping
+  content: {type: String, required: true},
+  read: {type: Boolean, default: false},
+  create_time: {type: Number},
+})
+
+const ChatModel = mongoose.model('chat', chatSchema)
+
+exports.ChatModel = ChatModel

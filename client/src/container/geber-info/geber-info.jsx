@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
+import { Redirect } from 'react-router-dom'
 import { NavBar, InputItem, TextareaItem, Button } from 'antd-mobile'
 import HeaderSelector from '../../components/header-selector/header-selector'
+
+import { updateUser } from '../../redux/actions'
 
 class GeberInfo extends Component {
   state = {
@@ -25,10 +28,17 @@ class GeberInfo extends Component {
   }
 
   save = () => {
-    console.log(this.state)
+    this.props.updateUser(this.state)
   }
 
   render() {
+    // if info completed, redirect to geber oder bewerber's main page
+    const { header, type} = this.props.user
+    if (header) { // info completed
+      const path = type === 'geber' ? '/geber' : '/bewerber'
+      return <Redirect to={path}/>
+    }
+
     return (
       <div>
         <NavBar>GeberInfo</NavBar>
@@ -44,6 +54,6 @@ class GeberInfo extends Component {
 }
 
 export default connect(
-  state => ({}),
-  {}
+  state => ({user: state.user}),
+  { updateUser }
 )(GeberInfo)
