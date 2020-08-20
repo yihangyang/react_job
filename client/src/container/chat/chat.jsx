@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import { NavBar, List, WingBlank, WhiteSpace, Card, InputItem, Grid, Icon } from 'antd-mobile';
-import { sendMsg } from '../../redux/actions'
+import QueueAnim from 'rc-queue-anim'
+import { sendMsg, readMsg } from '../../redux/actions'
 
 const Header = Card.Header
 
@@ -27,6 +28,13 @@ class Chat extends Component {
   componentDidUpdate() {
     // after send msg
     window.scrollTo(0, document.body.scrollHeight)
+  }
+
+  componentWillUnmount () {
+    // send req to update th amount of unread msg
+    const from = this.props.match.params.userid
+    const to = this.props.user._id
+    this.props.readMsg(from, to)
   }
   toggleShow = () => {
     const isShow = !this.state.isShow
@@ -83,36 +91,38 @@ class Chat extends Component {
           className="sticky-header"
           onLeftClick={() => this.props.history.goBack()}
         >
-          {users[meId].username}
+          {users[targetId].username}
         </NavBar>
         <List style={{marginTop: 50, marginBottom: 50}}>
-          {
-            shownMsgs.map(msg => {
-              if (meId === msg.to) { // target send me
-                return (
-                  <WingBlank size="lg" key={msg._id}>
-                    <Card>
-                      <Header
-                        title={<span style={{margin: 14}}>{msg.content}</span>}
-                        thumb={targetIcon}
-                      />
-                    </Card>
-                  </WingBlank>
-                )
-              } else { // I send target
-                return (
-                  <WingBlank size="lg" className="flipx" key={msg._id}>
-                    <Card>
-                      <Header
-                        title={<span className="flipxx" style={{margin: 14}}>{msg.content}</span>}
-                        thumb={meIcon}
-                      />
-                    </Card>
-                  </WingBlank>
-                )
-              }
-            })
-          }
+          <QueueAnim type="alpha">
+            {
+              shownMsgs.map(msg => {
+                if (meId === msg.to) { // target send me
+                  return (
+                    <WingBlank size="lg" key={msg._id}>
+                      <Card>
+                        <Header
+                          title={<span style={{margin: 14}}>{msg.content}</span>}
+                          thumb={targetIcon}
+                        />
+                      </Card>
+                    </WingBlank>
+                  )
+                } else { // I send target
+                  return (
+                    <WingBlank size="lg" className="flipx" key={msg._id}>
+                      <Card>
+                        <Header
+                          title={<span className="flipxx" style={{margin: 14,transform: "scaleX(1)"}}>{msg.content}</span>}
+                          thumb={meIcon}
+                        />
+                      </Card>
+                    </WingBlank>
+                  )
+                }
+              })
+            }
+          </QueueAnim>
         </List>
         <div className="am-tab-bar">
           <InputItem 
@@ -147,5 +157,5 @@ class Chat extends Component {
 
 export default connect(
   state => ({ user: state.user, chat: state.chat }),
-  { sendMsg }
+  { sendMsg, readMsg }
 )(Chat)

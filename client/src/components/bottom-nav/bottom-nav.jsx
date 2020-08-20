@@ -7,11 +7,12 @@ const Item = TabBar.Item
 class BottomNav extends Component {
 
   static propTypes = {
-    navList: PropTypes.array.isRequired
+    navList: PropTypes.array.isRequired,
+    unReadCount: PropTypes.number.isRequired
   }
 
   render() {
-    let { navList } = this.props
+    let { navList, unReadCount } = this.props
     // fliter the bottom_nav_bar_item whose hide ist true
     navList = navList.filter(nav => !nav.hide)
     const path = this.props.location.pathname
@@ -21,6 +22,7 @@ class BottomNav extends Component {
           navList.map((nav, index) => (
             <Item key={nav.path + index}
                   title={nav.text}
+                  badge={nav.path==="/message" ? unReadCount : 0}
                   icon={{uri: require(`./images/${nav.icon}.png`)}}
                   selectedIcon={{uri: require(`./images/${nav.icon}-selected.png`)}}
                   selected={path === nav.path}

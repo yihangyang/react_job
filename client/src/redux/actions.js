@@ -1,6 +1,8 @@
 import io from 'socket.io-client'
 
-import { AUTH_SUCESS, ERROR_MSG, RECEIVE_USER, RESET_USER, RECEIVE_USER_LIST, RECEIVE_MSG_LIST, RECEIVE_MSG } from './action-types'
+import {
+  AUTH_SUCESS, ERROR_MSG, RECEIVE_USER, RESET_USER, RECEIVE_USER_LIST, RECEIVE_MSG_LIST, RECEIVE_MSG, MSG_READ
+} from './action-types'
 import { reqRegister, reqLogin, reqUpdateUser, reqUserInfo, reqUserList, reqChatMsgList, reqReadMsg } from '../api'
 
 function initIO(dispatch, userid) {
@@ -12,7 +14,7 @@ function initIO(dispatch, userid) {
       console.log("listen: receive msg from server", chatMsg)
       // only the receiver of chat_msg is this user, then save
       if (userid === chatMsg.from || userid === chatMsg.to) {
-        dispatch(receiveMsg(chatMsg))
+        dispatch(receiveMsg(chatMsg, userid))
       }
     })
   }
@@ -24,7 +26,7 @@ async function getChatMsgList(dispatch, userid) {
   const result = response.data
   if(result.code === 0) { // success
     const { users, chatMsgs } = result.data
-    dispatch(receiveChatMsgList({ users, chatMsgs }))
+    dispatch(receiveChatMsgList({ users, chatMsgs, userid }))
   } else { // fail
     dispatch(errorMsg(result.msg))
   }
@@ -38,13 +40,25 @@ export const sendMsg = ({from, to, content}) => {
   }
 }
 
+export const readMsg = (from, to) => {
+  return async dispatch => {
+    const response = await reqReadMsg(from)
+    const result = response.data
+    if (result.code === 0) {
+      const count = result.data
+      dispatch(msgRead({count, from, to}))
+    }
+  }
+}
+
 const authSucess = (user) => ({type: AUTH_SUCESS, data: user})
 const errorMsg = (msg) => ({type: ERROR_MSG, data: msg})
 const receiveUser = (user) => ({type: RECEIVE_USER, data: user})
 export const resetUser = (msg) => ({type: RESET_USER, data: msg})
 const receiveUserList = (userList) => ({type: RECEIVE_USER_LIST, data: userList})
-const receiveChatMsgList = ({ users, chatMsgs }) => ({type: RECEIVE_MSG_LIST, data: { users, chatMsgs }})
-const receiveMsg = (chatMsg) => ({type: RECEIVE_MSG, data: chatMsg})
+const receiveChatMsgList = ({ users, chatMsgs, userid }) => ({type: RECEIVE_MSG_LIST, data: { users, chatMsgs, userid }})
+const receiveMsg = (chatMsg, userid) => ({type: RECEIVE_MSG, data: {chatMsg,userid}})
+const msgRead = ({count, from, to}) => ({type: MSG_READ, data: {count, from, to}})
 
 export const register = (user) => {
   const {username, password, password2, type} = user

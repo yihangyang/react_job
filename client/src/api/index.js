@@ -13,4 +13,4 @@ export const reqUserList = (type) => ajax('/userlist', {type})
 // get msg list of this user
 export const reqChatMsgList = () => ajax('/msglist')
 // modify msg from unread to read
-export const reqReadMsg = (from) => ajax("/readmsg", { from }, 'POST')
+export const reqReadMsg = (from) => ajax('/readmsg', { from }, 'POST')

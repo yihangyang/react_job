@@ -111,12 +111,12 @@ router.get('/msglist', function (req, res, next) {
 })
 
 // modify msg from unread to read
-router.post('/rendmsg', function (req, res) {
+router.post('/readmsg', function (req, res, next) {
   const from = req.body.from
   const to = req.cookies.userid // only allowed to modify the msgs which other send me
 
   // param1: condition, param2: update, param3: default update once, but here should use multi, param4: callback
-  ChatModel.update({from, to, read:false}, {read: true}, {multi: true}, function(err, doc) {
+  ChatModel.update({from, to, read: false}, {read: true}, {multi: true}, function(err, doc) {
     console.log('/readmsg', doc)
     res.send({code: 0, data: doc.nModified}) // the num of updated data
   })

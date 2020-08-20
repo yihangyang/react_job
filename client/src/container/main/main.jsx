@@ -70,7 +70,7 @@ class Main extends Component {
       return <Redirect to="/login" />
     }
     // check whether user login (has cookie), if not then redirect to login page
-    const {user} = this.props
+    const { user, unReadCount } = this.props
     if(!user._id) {
       return null
     } else {
@@ -107,13 +107,13 @@ class Main extends Component {
 
           <Route component={NotFound} />
         </Switch>
-        { currentNav ? <BottomNav navList={navList} /> : null}
+        { currentNav ? <BottomNav navList={navList} unReadCount={unReadCount}/> : null}
       </div>
     )
   }
 }
 
 export default connect(
-  state => ({user: state.user}),
+  state => ({user: state.user, unReadCount: state.chat.unReadCount}),
   {getUser}
 )(Main)
